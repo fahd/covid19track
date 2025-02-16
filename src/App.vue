@@ -6,58 +6,59 @@
         @country-selected="handleCountrySelected"
       />
     </div>
-    <div class='right'>
+    <div class="right">
       <div class="main-page">
-      <Header 
-        :override-title="branding?.mainTitle" 
-        :country-list="countryList" 
-        v-model="selectedCountry" 
-      />
-      <StateMap
-        v-if="selectedCountry == 'USA' && stateData.length > 0"
-        :state-data="stateData"
-        :state-totals="stateTotals"
-        :loading="!stateData.length"
-      />
-      <MainNumbers
-        :loading="!loaded.overviewData"
-        :overview-data="overviewData"
-        :all-time-series="loaded.timeSeries ? timeSeries : null"
-      />
-      <TableMapSection
-      section-type="map"
-      :country="selectedCountry"
-      :loading="!loaded.globalTableData"
-      :global-table-data="globalTableData"
-    />
-      <hr class="divider"/>
+        <Header
+          :override-title="branding?.mainTitle"
+          :country-list="countryList"
+          v-model="selectedCountry"
+        />
+        <StateMap
+          v-if="selectedCountry == 'USA' && stateData.length > 0"
+          :state-data="stateData"
+          :state-totals="stateTotals"
+          :loading="!stateData.length"
+        />
+        <MainNumbers
+          :loading="!loaded.overviewData"
+          :overview-data="overviewData"
+          :all-time-series="loaded.timeSeries ? timeSeries : null"
+        />
+        <TableMapSection
+          section-type="map"
+          :country="selectedCountry"
+          :loading="!loaded.globalTableData"
+          :global-table-data="globalTableData"
+        />
+        <hr class="divider" />
 
-    <TableMapSection
-      :loading="!loaded.globalTableData"
-      :global-table-data="globalTableData"
-      :local-table-data="localTableData"
-    />
-    <hr class="divider"/>
-    
+        <TableMapSection
+          :loading="!loaded.globalTableData"
+          :global-table-data="globalTableData"
+          :local-table-data="localTableData"
+        />
+        <hr class="divider" />
+
         <ChartSection
           :loading="!loaded.timeSeries"
           :all-time-series="timeSeries"
           :is-daily="true"
         />
-        <hr class="divider"/>
-        <ChartSection :loading="!loaded.timeSeries" :all-time-series="timeSeries" />
+        <hr class="divider" />
+        <ChartSection
+          :loading="!loaded.timeSeries"
+          :all-time-series="timeSeries"
+        />
         <div class="footer">
           <div class="disclaimer">
-            These datasets are retrieved available from disease.sh, a publicly available API for up-to-date COVID-19 data.
+            These datasets are retrieved available from disease.sh, a publicly
+            available API for up-to-date COVID-19 data.
           </div>
+        </div>
       </div>
-      </div>
-      
     </div>
-      
   </div>
 </template>
-
 <script lang="ts">
 import { defineComponent } from "vue";
 import Header from "./components/Header.vue";
@@ -73,24 +74,23 @@ import {
   getTimeSeries,
   getCountryList,
   combineVaccineData,
-  getStateData
+  getStateData,
 } from "./utils/api";
 
-
 interface DataTypes {
-  render: boolean,
-  overviewData: DataItem | null,
-  timeSeries: Timeseries | null,
-  globalTableData: DataItem[] | null,
-  localTableData: DataItem[] | null,
-  countryList: CountryListItem[],
-  selectedCountry: string,
-  errorMsg: string | null,
+  render: boolean;
+  overviewData: DataItem | null;
+  timeSeries: Timeseries | null;
+  globalTableData: DataItem[] | null;
+  localTableData: DataItem[] | null;
+  countryList: CountryListItem[];
+  selectedCountry: string;
+  errorMsg: string | null;
   loaded: {
-    overviewData: boolean,
-    timeSeries: boolean,
-    globalTableData: boolean,
-  },
+    overviewData: boolean;
+    timeSeries: boolean;
+    globalTableData: boolean;
+  };
 }
 
 export default defineComponent({
@@ -101,7 +101,7 @@ export default defineComponent({
     StateMap,
     ChartSection,
     TableMapSection,
-    Sidebar
+    Sidebar,
   },
   data(): DataTypes {
     return {
@@ -121,12 +121,12 @@ export default defineComponent({
         globalTableData: false,
       },
       excludedCountries: ["Popular", "Global", "All Countries and regions"],
-      overviewDataByCountry: [], 
+      overviewDataByCountry: [],
     };
   },
   async mounted() {
     try {
-      this.updateStatesData(false)
+      this.updateStatesData(false);
       this.countryList = getCountryList([], this.$t);
       this.updateCountryData();
       this.globalTableData = await getAllCountryData();
@@ -140,13 +140,11 @@ export default defineComponent({
   watch: {
     selectedCountry() {
       this.updateCountryData();
-      if (this.selectedCountry === 'USA'){
-        this.updateStatesData(false)
+      if (this.selectedCountry === "USA") {
+        this.updateStatesData(false);
+      } else {
+        this.updateStatesData(true);
       }
-      else {
-        this.updateStatesData(true)
-      }
-      
     },
     filteredCountryList: {
       immediate: true,
@@ -155,11 +153,10 @@ export default defineComponent({
           this.fetchOverviewDataForCountries(newList);
         }
       },
-    }
+    },
   },
   computed: {
     filteredCountryList() {
-      
       return this.countryList.filter(
         (country) => !this.excludedCountries.includes(country.label)
       );
@@ -167,20 +164,15 @@ export default defineComponent({
   },
   methods: {
     handleCountrySelected(countryName) {
-    
       this.selectedCountry = countryName;
-
-      
-      
     },
     async updateStatesData(empty) {
-      if (empty){
-        this.stateData = []
-        this.stateTotals = []
-      }
-      else {
+      if (empty) {
+        this.stateData = [];
+        this.stateTotals = [];
+      } else {
         try {
-          const result = await getStateData()
+          const result = await getStateData();
           this.stateData = result.data;
           this.stateTotals = result.totals;
         } catch (error) {
@@ -191,8 +183,8 @@ export default defineComponent({
     async updateCountryData() {
       try {
         localStorage.setItem("lastCountry", this.selectedCountry);
-        if (this.selectedCountry !== 'USA'){
-          this.stateData = []
+        if (this.selectedCountry !== "USA") {
+          this.stateData = [];
         }
         this.localTableData = null;
         this.loaded.overviewData = false;
@@ -201,17 +193,20 @@ export default defineComponent({
         this.loaded.overviewData = true;
         this.timeSeries = await getTimeSeries(this.selectedCountry);
         this.loaded.timeSeries = true;
-        await combineVaccineData(undefined, this.selectedCountry, this.overviewData);
+        await combineVaccineData(
+          undefined,
+          this.selectedCountry,
+          this.overviewData
+        );
       } catch (error) {
         this.handleError(error.toString());
       }
     },
     async fetchOverviewDataForCountries(countries) {
-      const countryNames = countries.map((country) => country.label); 
+      const countryNames = countries.map((country) => country.label);
       try {
-
         const results = await getOverviewDataAllCountries(countryNames);
-        if (results.length > 2){
+        if (results.length > 2) {
           this.overviewDataByCountry = results;
         }
       } catch (error) {
@@ -237,10 +232,6 @@ export default defineComponent({
   text-align: center;
   font-size: 1.1em;
   text-decoration: none;
-}
-
-.main-content {
-  /* display: flex; */
 }
 
 .left {
@@ -270,9 +261,9 @@ export default defineComponent({
 }
 
 @media (max-width: 768px) {
-    .main-page {
-      max-width: 100%;
-    }
+  .main-page {
+    max-width: 100%;
+  }
 }
 
 .footer {
@@ -282,37 +273,20 @@ export default defineComponent({
 
 .disclaimer {
   margin: 0.5em 0;
-  font-size:18px;
+  font-size: 18px;
   max-width: 500px;
   line-height: initial;
   text-align: center;
   color: #666;
 }
 
-
 /* 1. Hide Sidebar on Small Screens (Up to 768px) */
 @media (max-width: 768px) {
-    .left {
-        display: none;
-    }
-    .right {
-      padding-left: 0px;
-    }
+  .left {
+    display: none;
+  }
+  .right {
+    padding-left: 0px;
+  }
 }
-
-
-/* 
-@media (min-width: 769px) and (max-width: 992px) {
-    .sidebar {
-        width: 150px; /* Adjust width for medium devices
-    }
-}
-
-
- @media (min-width: 993px) {
-    .sidebar {
-        display: block;
-        width: 300px; /* Original width or your choice 
-    }
-}*/ 
 </style>

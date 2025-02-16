@@ -3,14 +3,20 @@
     <div class="header">
       <div class="header-title">
         <h2>{{ overrideTitle ?? "COVID-19 Worldwide Cases" }}</h2>
-      </div>      
+      </div>
       <div class="header-subtitle">
         <p class="subtitle">
           COVID-19 Data available via Open Disease Data API @
-          <a class="api-link" id="apiLink" href="https://disease.sh/" target="_blank">disease.sh</a><br/>
+          <a
+            class="api-link"
+            id="apiLink"
+            href="https://disease.sh/"
+            target="_blank"
+            >disease.sh</a
+          ><br />
           Data reflects latest up to date reported information.
         </p>
-      </div>      
+      </div>
       <div class="country-select">
         <n-select
           :value="modelValue"
@@ -32,30 +38,30 @@ export default {
   props: {
     overrideTitle: {
       type: String,
-      default: null
+      default: null,
     },
     countryList: {
       type: Array,
-      default: []
+      default: [],
     },
     modelValue: {
       type: String,
-      default: "all"
-    }
+      default: "all",
+    },
   },
   data() {
     return {
       themeOverrides: {
         common: {
-          primaryColor: "#000", 
+          primaryColor: "#000",
         },
         Select: {
-          borderRadius: "0", 
-          border: "none", 
-          background: "transparent", 
-          boxShadow: "none", 
-          padding: "0", 
-          fontSize: "16px", 
+          borderRadius: "0",
+          border: "none",
+          background: "transparent",
+          boxShadow: "none",
+          padding: "0",
+          fontSize: "16px",
           hoverBorderColor: "#ff0000", // Custom hover border color
           focusBorderColor: "#00ff00",
         },
@@ -64,43 +70,32 @@ export default {
   },
   methods: {
     changeCountry(e) {
-      this.$emit('update:modelValue', e);
-    }
+      this.$emit("update:modelValue", e);
+    },
   },
   components: {
-    NSelect 
-  }
+    NSelect,
+  },
 };
 </script>
 
 <style scoped>
-
 .country-select {
   display: flex;
-  justify-content:center;
+  justify-content: center;
   background: none;
   border: none !important;
   width: 100%;
-  font-size:36px;
+  font-size: 36px;
   margin: 1em 0;
 }
-/*
-  .n-select ::v-deep(.n-base-selection) {
-    border: none !important; /* Remove border 
-    background-color: transparent !important; /* Transparent background 
-    box-shadow: none !important; /* Remove box shadow 
-  }
 
-  .n-select ::v-deep(.n-base-selection:hover) {
-    border-color: #ff0000 !important; 
-  }
-    */
 .header {
   padding: 20px 10px;
   text-align: left;
   display: flex;
   align-items: center;
-  justify-content:center;
+  justify-content: center;
   flex-direction: column;
 }
 
@@ -149,5 +144,4 @@ export default {
   background: transparent !important;
   padding: 0 !important;
 }
-
 </style>

@@ -1,21 +1,55 @@
 const apiUrl = "https://disease.sh/v3/covid-19/";
 let allVaccineData: { [key: string]: Vaccine } | null = null;
-import { states } from './states'
+import { states } from "./states";
 
+async function request(endpoint: string): Promise<any> {
+  try {
+    const response = await fetch(apiUrl + endpoint);
+    return response.json();
+  } catch (e: unknown) {
+    throw e;
+  }
+}
 
-export async function combineVaccineData(allData?: DataItem[], country?: string, overview?: DataItem) {
+export async function combineVaccineData(
+  allData?: DataItem[],
+  country?: string,
+  overview?: DataItem
+) {
   const vaccine = await getVaccineData();
   if (!vaccine) return;
   if (country && overview) {
-    doVaccineCombine(overview, vaccine[country]);
+    combineVaccineCountryData(overview, vaccine[country]);
   }
   if (allData) {
     allData.forEach((e: DataItem) => {
       if (e.country) {
-        doVaccineCombine(e, vaccine[e.country]);
+        combineVaccineCountryData(e, vaccine[e.country]);
       }
     });
   }
+}
+
+function combineVaccineCountryData(target: DataItem, vaccine: Vaccine) {
+  if (!vaccine) return;
+
+  target.vaccinated = vaccine.total;
+  target.todayVaccinated = vaccine.daily;
+  target.vaccinatedPerOneMillion = vaccine.dailyPerMillion;
+}
+
+async function getVaccineData() {
+  let res = await request(
+    "vaccine/coverage/countries?lastdays=1&fullData=true"
+  );
+  const resArray = [];
+  res.forEach((e: VaccineReturnType) =>
+    resArray.push([e.country, e.timeline[0]])
+  );
+  const worldRes = await request("vaccine/coverage?lastdays=1&fullData=true");
+  resArray.push(["all", worldRes[0]]);
+  allVaccineData = Object.fromEntries(resArray);
+  return allVaccineData;
 }
 
 export async function getAllCountryData(): Promise<DataItem[]> {
@@ -28,41 +62,41 @@ export async function getAllCountryData(): Promise<DataItem[]> {
 
 export async function getStateData(): Promise<DataItem[]> {
   const statesData = await request(`states`);
-  const o:any = []
-  const states_:any = states;
-  var min = Infinity
-  var max = -Infinity
-  var total = 0
+  const o: any = [];
+  const states_: any = states;
+  var min = Infinity;
+  var max = -Infinity;
+  var total = 0;
   statesData.forEach((e: any) => {
     const stateName = e.state;
-    
+
     if (e.deaths >= 100) {
-      min = Math.min(min, e.deaths)
+      min = Math.min(min, e.deaths);
     }
 
-    max = Math.max(max, e.deaths)
-    total += e.deaths
+    max = Math.max(max, e.deaths);
+    total += e.deaths;
 
-    if (states.hasOwnProperty(stateName)){
-        const stateData = {
-          ...e,
-          lat: states_[stateName].lat,
-          lng: states_[stateName].lng
-        }
-        o.push(stateData)
-      }
-  })
-  
-  const data:any = {
-    totals:{
+    if (states.hasOwnProperty(stateName)) {
+      const stateData = {
+        ...e,
+        lat: states_[stateName].lat,
+        lng: states_[stateName].lng,
+      };
+      o.push(stateData);
+    }
+  });
+
+  const data: any = {
+    totals: {
       min,
       max,
-      total
+      total,
     },
-    data:o
-  }
+    data: o,
+  };
 
-  return data
+  return data;
 }
 
 export async function getOverviewData(country: string): Promise<DataItem> {
@@ -74,7 +108,7 @@ export async function getOverviewData(country: string): Promise<DataItem> {
     result = await request(`countries/${country}`);
     if (result.todayCases == 0) {
       result = await request(`countries/${country}?yesterday=true`);
-      
+
       outdated = true;
     } else {
       outdated = false;
@@ -83,22 +117,26 @@ export async function getOverviewData(country: string): Promise<DataItem> {
   return { ...result, outdated };
 }
 
-export async function getOverviewDataAllCountries(countries: string[]): Promise<DataItem[]> {
+export async function getOverviewDataAllCountries(
+  countries: string[]
+): Promise<DataItem[]> {
   try {
     const requests = countries.map((country) =>
       request(`countries/${country}`).then((result) => {
         if (result.todayCases === 0) {
-          return request(`countries/${country}?yesterday=true`).then((yesterdayResult) => ({
-            ...yesterdayResult,
-            outdated: true,
-          }));
+          return request(`countries/${country}?yesterday=true`).then(
+            (yesterdayResult) => ({
+              ...yesterdayResult,
+              outdated: true,
+            })
+          );
         }
         return { ...result, outdated: false };
       })
     );
-    
+
     const results = await Promise.all(requests);
-    
+
     results.sort((a, b) => b.cases - a.cases);
 
     return results;
@@ -112,7 +150,7 @@ export async function getTimeSeries(country: string): Promise<Timeseries> {
   let res = await request(`historical/${country}?lastdays=all`);
   res = res.country ? res.timeline : res;
   let data = res as Timeseries;
-  
+
   let gotNonZeroData = false;
   let gotZeroAfterNonZero = false;
   const datesToDelete = [];
@@ -127,13 +165,13 @@ export async function getTimeSeries(country: string): Promise<Timeseries> {
     }
   }
   datesToDelete.forEach((e) => delete data.recovered[e]);
-  
+
   data.active = { ...data.recovered };
   for (let i in data.cases) {
     if (!data.recovered[i] || !data.deaths[i]) continue;
     data.active[i] = data.cases[i] - data.deaths[i] - data.recovered[i];
   }
-  
+
   const url =
     country === "all"
       ? "vaccine/coverage?lastdays=all"
@@ -142,7 +180,6 @@ export async function getTimeSeries(country: string): Promise<Timeseries> {
   vaccineRes = vaccineRes.country ? vaccineRes.timeline : vaccineRes;
   data.vaccinated = vaccineRes;
 
-  
   for (const [key, timeSeries] of Object.entries(data)) {
     const dailyTimeSeries = {} as TimeseriesItem;
     const tsEntires = Object.entries(timeSeries as TimeseriesItem);
@@ -157,7 +194,10 @@ export async function getTimeSeries(country: string): Promise<Timeseries> {
   return data;
 }
 
-export function getCountryList(allCountryData: any[], t: any): CountryListItem[] {
+export function getCountryList(
+  allCountryData: any[],
+  t: any
+): CountryListItem[] {
   let array = [
     {
       label: t("dropdown.popular"),
@@ -199,33 +239,3 @@ export function getCountryList(allCountryData: any[], t: any): CountryListItem[]
 
   return array;
 }
-
-
-async function request(endpoint: string): Promise<any> {
-  try {
-    const response = await fetch(apiUrl + endpoint);
-    return response.json();
-  } catch (e: unknown) {
-    window.ga("send", "event", "error", "network", JSON.stringify(e));
-    throw e;
-  }
-}
-
-async function getVaccineData() {
-  if (allVaccineData) return allVaccineData;
-  let res = await request("vaccine/coverage/countries?lastdays=1&fullData=true");
-  const resArray = [];
-  res.forEach((e: VaccineReturnType) => resArray.push([e.country, e.timeline[0]]));
-  const worldRes = await request("vaccine/coverage?lastdays=1&fullData=true");
-  resArray.push(["all", worldRes[0]]);
-  allVaccineData = Object.fromEntries(resArray);
-  return allVaccineData;
-}
-
-function doVaccineCombine(target: DataItem, vaccine: Vaccine) {
-  if (!vaccine) return;
-  target.vaccinated = vaccine.total;
-  target.todayVaccinated = vaccine.daily;
-  target.vaccinatedPerOneMillion = vaccine.dailyPerMillion;
-}
-

@@ -1,32 +1,25 @@
 import { graphic } from "echarts/core";
 
-function formatter(value: Number): string {
-  return value >= 100000 ? value.toExponential() : value.toString();
+export function getChartOption(
+  type: string,
+  chartType: string,
+  timeSeries: object,
+  dataType: string,
+  color: string
+) {
+  if (type == "minimum") {
+    return minimumChart(timeSeries, chartType, dataType, color);
+  } else if (type == "full") {
+    return fullChart(timeSeries, chartType, dataType, color);
+  }
 }
 
-function getSeries(dataType: string, chartType: string, color: string, data: Array<any>) {
-  return {
-    name: dataType,
-    data: data,
-    type: chartType,
-    itemStyle: {
-      color: color,
-    },
-    lineStyle: {
-      color: color,
-    },
-    areaStyle: {
-      color: new graphic.LinearGradient(0, 0, 0, 1, [
-        {
-          offset: 1,
-          color: color,
-        },
-      ]),
-    },
-  };
-}
-
-function minimumChart(timeSeries: object, chartType: string, dataType: string, color: string) {
+function minimumChart(
+  timeSeries: object,
+  chartType: string,
+  dataType: string,
+  color: string
+) {
   const labels = Object.keys(timeSeries);
   const data = Object.values(timeSeries);
 
@@ -57,7 +50,12 @@ function minimumChart(timeSeries: object, chartType: string, dataType: string, c
   };
 }
 
-function fullChart(timeSeries: object, chartType: string, dataType: string, color: string) {
+function fullChart(
+  timeSeries: object,
+  chartType: string,
+  dataType: string,
+  color: string
+) {
   const labels = Object.keys(timeSeries);
   const data = Object.values(timeSeries);
 
@@ -101,16 +99,33 @@ function fullChart(timeSeries: object, chartType: string, dataType: string, colo
   };
 }
 
-export function getChartOption(
-  type: string,
-  chartType: string,
-  timeSeries: object,
+function getSeries(
   dataType: string,
-  color: string
+  chartType: string,
+  color: string,
+  data: Array<any>
 ) {
-  if (type == "full") {
-    return fullChart(timeSeries, chartType, dataType, color);
-  } else if (type == "minimum") {
-    return minimumChart(timeSeries, chartType, dataType, color);
-  }
+  return {
+    name: dataType,
+    data: data,
+    type: chartType,
+    itemStyle: {
+      color: color,
+    },
+    lineStyle: {
+      color: color,
+    },
+    areaStyle: {
+      color: new graphic.LinearGradient(0, 0, 0, 1, [
+        {
+          offset: 1,
+          color: color,
+        },
+      ]),
+    },
+  };
+}
+
+function formatter(value: Number): string {
+  return value >= 100000 ? value.toExponential() : value.toString();
 }

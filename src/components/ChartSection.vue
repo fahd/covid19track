@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title">{{title}}</div>
+    <div class="title">{{ title }}</div>
     <n-spin :show="loading">
       <div class="block">
         <Selector :types="dataTypes" v-model="selectedType" />
@@ -43,7 +43,7 @@ export default {
   },
   data() {
     return {
-      dataTypes: ["cases", "deaths", "vaccinated", "recovered", "active"],
+      dataTypes: ["cases", "deaths", "vaccinated", "recovered"],
       selectedType: "cases",
     };
   },
@@ -62,7 +62,9 @@ export default {
       return this.isDaily ? "bar" : "line";
     },
     title() {
-      return this.isDaily ? this.$t("subtitles.daily") : this.$t("subtitles.cumulative") ;
+      return this.isDaily
+        ? this.$t("subtitles.daily")
+        : this.$t("subtitles.cumulative");
     },
   },
 };

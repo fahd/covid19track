@@ -1,38 +1,34 @@
 <template>
   <div class="main-numbers-container">
-    
     <div class="global-stats">
       <div
         class="global-stat"
         :class="{ 'loading-block': loading }"
         v-for="(item, idx) of display"
-        :key="idx">
-        <div 
-          v-if="item"
-          :class="[`type-${item.type}`]"
-        >
-        <div class="number total"><count-to :end-val="item.total" :duration="1000" /></div>
-        <div 
-          :class="['number-title', `type-${item.type}`]"
-          >{{ item.totalTitle ?? $t("Total") }} {{item.type[0].toUpperCase() + item.type.slice(1)}}</div>
+        :key="idx"
+      >
+        <div v-if="item" :class="[`type-${item.type}`]">
+          <div class="number total">
+            <count-to :end-val="item.total" :duration="1000" />
+          </div>
+          <div :class="['number-title', `type-${item.type}`]">
+            {{ item.totalTitle ?? $t("Total") }}
+            {{ item.type[0].toUpperCase() + item.type.slice(1) }}
+          </div>
         </div>
+      </div>
     </div>
-  </div>
-  <div>
-    
-  </div>
-  <div class="title">
-    
-  </div>
-  <div class="overview-wrapper">
-    <div
-      class="block overview"
-      :class="{ 'loading-block': loading }"
-      v-for="(item, idx) of display"
-      :key="idx"
-    >
-    
-      <div v-if="item" class="bg-container">  
+    <div></div>
+    <div class="title"></div>
+    <div class="overview-wrapper">
+      <!-- Iterate over Cases, Recovered, Deaths -->
+      <div
+        class="block overview"
+        :class="{ 'loading-block': loading }"
+        v-for="(item, idx) of display"
+        :key="idx"
+      >
+        <div v-if="item" class="bg-container">
           <div class="bg-chart" v-if="allTimeSeries">
             <Chart
               :time-series="allTimeSeries[item.type]"
@@ -40,21 +36,17 @@
               type="minimum"
             ></Chart>
             <div :class="{ [item.color]: true, 'ov-item': true }">
-              <div class="ov-title number"> {{ item.title }}</div>
-              <div class="number" ref="num">
-                <count-to :end-val="item.today" :duration="1000" />
-              </div>
+              <div class="ov-title number">{{ item.title }}</div>
+              <div class="number" ref="num"></div>
             </div>
           </div>
           <div v-else class="bg-loader">
             <span class="loader"></span>
           </div>
+        </div>
       </div>
-      
-      
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -99,8 +91,7 @@ export default defineComponent({
   },
   methods: {
     loadDisplay() {
-      const data = this.overviewData
-    
+      const data = this.overviewData;
       const cases = {
         color: "blue",
         type: "cases",
@@ -122,24 +113,16 @@ export default defineComponent({
         today: data.todayRecovered,
         total: data.recovered,
       };
-      const active = {
-        color: "orange",
-        type: "active",
-        title: this.$t("today.critical"),
-        today: data.critical,
-        totalTitle: this.$t("today.active"),
-        total: data.active,
-      };
-      this.display = [cases, deaths, recovered, active];
+
+      this.display = [cases, deaths, recovered];
     },
   },
 });
 </script>
 
 <style scoped>
-
 .main-numbers-container {
-  display:flex;
+  display: flex;
   flex-direction: column;
 }
 
@@ -151,7 +134,7 @@ export default defineComponent({
 .number {
   text-align: center;
 }
- 
+
 .block {
   box-shadow: none;
 }
@@ -166,15 +149,15 @@ export default defineComponent({
 }
 
 .type-cases {
-  color: #0078ff
+  color: #0078ff;
 }
 
 .type-deaths {
-  color: #ff5151
+  color: #ff5151;
 }
 
 .type-recovered {
-  color: #28ca00
+  color: #28ca00;
 }
 
 .type-active {
@@ -191,12 +174,12 @@ export default defineComponent({
 .overview {
   display: flex;
   justify-content: space-between;
-  width: 48%;
+  width: 32%;
   margin-bottom: 1em;
   /* font-weight: bold; */
   font-size: 14px;
   overflow: hidden;
-  height: 190px; 
+  height: 190px;
 }
 
 .bg-chart {
@@ -216,17 +199,17 @@ export default defineComponent({
 
 .ov-item {
   position: absolute;
-      bottom: 0;
-    right: 0;
-    left: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
   z-index: 100;
   display: flex;
-    justify-content: center;
-    flex-direction: row-reverse;
-    background: #f5f5f5;
-    border-radius: 0;
-    box-shadow: none;
-    opacity: 1;
+  justify-content: center;
+  flex-direction: row-reverse;
+  background: #f5f5f5;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 1;
 }
 
 .number-title {
@@ -243,8 +226,6 @@ export default defineComponent({
   font-size: 1.3em;
   padding-bottom: 0;
 }
-
-
 
 .bg-chart::after {
   /* content: "";
@@ -296,34 +277,34 @@ export default defineComponent({
 }
 
 .loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid #d7d7d7;
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-    }
+  width: 48px;
+  height: 48px;
+  border: 5px solid #d7d7d7;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
 
-    @keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-    }
-  @media (max-width: 992px) {
-   .global-stats {
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 992px) {
+  .global-stats {
     flex-direction: column;
-   }
-   .global-stat {
+  }
+  .global-stat {
     margin: 1em 0;
-   }
+  }
 
-   .overview {
+  .overview {
     width: 100%;
-   }
-} 
+  }
+}
 </style>

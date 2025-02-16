@@ -8,11 +8,10 @@
         :type="modelValue == type ? 'primary' : 'default'"
         size="small"
         @click="changeType(type)"
-        :style="{ borderColor:'#ff0000'}"
+        :style="{ borderColor: '#ff0000' }"
       >
         {{ $t(`type.${type}`) }}
       </n-button>
-      
 
       <n-dropdown
         v-if="limit < types.length"
@@ -20,7 +19,7 @@
         @select="changeType"
         placement="bottom-start"
         :options="dropdownOptions"
-        :style="{ borderColor:'#ff0000'}"
+        :style="{ borderColor: '#ff0000' }"
       >
         <n-button
           ghost
@@ -30,7 +29,7 @@
           <n-icon size="15">
             <ChevronDown />
           </n-icon>
-          <span v-if="isOverflowActive">{{$t(`type.${modelValue}`)}}</span>
+          <span v-if="isOverflowActive">{{ $t(`type.${modelValue}`) }}</span>
         </n-button>
       </n-dropdown>
     </n-button-group>
@@ -46,7 +45,7 @@ export default {
   props: {
     limit: {
       type: Number,
-      default: 3,
+      default: 2,
     },
     types: {
       type: Array,
@@ -88,17 +87,17 @@ export default {
 </script>
 
 <style scoped>
-  /* Change the border color for all n-buttons */
-  .n-button {
-    border-color: #ff0000 !important; /* Replace with your desired color */
-  }
-  
-  /* Optional: Different border color when 'primary' type is active */
-  .n-button.primary {
-    border-color: #0000ff !important; /* Replace with your desired color */
-  }
-  .n-base-selection n-base-selection--selected:hover,
-  .n-base-selection-label:hover {
-    border-color: #5da1fd !important;
-  }
-  </style>
+/* Change the border color for all n-buttons */
+.n-button {
+  border-color: #ff0000 !important; /* Replace with your desired color */
+}
+
+/* Optional: Different border color when 'primary' type is active */
+.n-button.primary {
+  border-color: #0000ff !important; /* Replace with your desired color */
+}
+.n-base-selection n-base-selection--selected:hover,
+.n-base-selection-label:hover {
+  border-color: #5da1fd !important;
+}
+</style>
