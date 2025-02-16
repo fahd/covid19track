@@ -42,8 +42,10 @@ export default {
     },
   },
   data() {
+    const dataTypes = ["cases", "deaths", "recovered"];
+    if (!this.isDaily) dataTypes.push("vaccinated");
     return {
-      dataTypes: ["cases", "deaths", "vaccinated", "recovered"],
+      dataTypes,
       selectedType: "cases",
     };
   },

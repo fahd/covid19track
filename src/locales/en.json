@@ -47,7 +47,6 @@
     "local": "Country",
     "population": "Population",
     "vaccinated": "Vaccinated",
-    "vaccinatedPerOneMillion": "Vaccinated per 1m",
     "todayVaccinated": "Vaccinated Today"
   },
   "dropdown": {

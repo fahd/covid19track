@@ -57,6 +57,7 @@ export default {
   },
   watch: {
     dataType() {
+      // rerender on select option
       this.updateChart();
     },
     tableData() {

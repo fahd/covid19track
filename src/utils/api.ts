@@ -35,7 +35,6 @@ function combineVaccineCountryData(target: DataItem, vaccine: Vaccine) {
 
   target.vaccinated = vaccine.total;
   target.todayVaccinated = vaccine.daily;
-  target.vaccinatedPerOneMillion = vaccine.dailyPerMillion;
 }
 
 async function getVaccineData() {
@@ -148,6 +147,7 @@ export async function getOverviewDataAllCountries(
 
 export async function getTimeSeries(country: string): Promise<Timeseries> {
   let res = await request(`historical/${country}?lastdays=all`);
+
   res = res.country ? res.timeline : res;
   let data = res as Timeseries;
 
