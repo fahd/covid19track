@@ -76,7 +76,7 @@ export default defineComponent({
   },
   data() {
     return {
-      display: [null, null, null, null],
+      display: [null, null, null],
     };
   },
   mounted() {

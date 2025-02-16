@@ -110,18 +110,13 @@ function getSeries(
     data: data,
     type: chartType,
     itemStyle: {
-      color: color,
+      color,
     },
     lineStyle: {
-      color: color,
+      color,
     },
     areaStyle: {
-      color: new graphic.LinearGradient(0, 0, 0, 1, [
-        {
-          offset: 1,
-          color: color,
-        },
-      ]),
+      color,
     },
   };
 }

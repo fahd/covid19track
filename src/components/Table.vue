@@ -13,9 +13,21 @@
 <script>
 import { NSpace, NDataTable } from "naive-ui";
 
-const totalKeys = ["cases", "deaths", "vaccinated", "active", "critical", "admission", "recovered", "tests"];
-const dailyKeys = ["todayCases", "todayDeaths", "todayAdmission", "todayRecovered"];
-const rateKeys = totalKeys.map(key => `${key}PerOneMillion`);
+const totalKeys = [
+  "cases",
+  "deaths",
+  "vaccinated",
+  "admission",
+  "recovered",
+  "tests",
+];
+const dailyKeys = [
+  "todayCases",
+  "todayDeaths",
+  "todayAdmission",
+  "todayRecovered",
+];
+const rateKeys = totalKeys.map((key) => `${key}PerOneMillion`);
 
 const keys = {
   total: totalKeys,
@@ -42,8 +54,8 @@ export default {
         if (typeof value === "number") {
           return value.toLocaleString(); // Formats with commas
         }
-        return value || "-"; // Return value as is if not a number
-    };
+        return value || "-";
+      };
 
       let columns = keys[this.dataType].map((item) => {
         return {
@@ -54,9 +66,9 @@ export default {
         };
       });
 
-      if(this.tableData && this.tableData.length > 0){
+      if (this.tableData && this.tableData.length > 0) {
         const entryProps = this.tableData[0];
-        columns = columns.filter(i => i.key in entryProps);
+        columns = columns.filter((i) => i.key in entryProps);
       }
 
       const res = [locationName].concat(columns);
@@ -93,7 +105,4 @@ export default {
 };
 </script>
 
-<style scoped>
-  
-
-</style>
+<style scoped></style>
